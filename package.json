@@ -1,6 +1,10 @@
 {
   "scripts": {
-    "start": "node index.js"
+    "step1": "node step1.js",
+    "step2": "node step2.js",
+    "step3": "node step3.js",
+    "step4": "node step4.js",
+    "step5": "node step5.js"
   },
   "dependencies": {
     "apollo-server-express": "^2.2.2",

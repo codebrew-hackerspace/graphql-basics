@@ -41,6 +41,117 @@ There are three types of interactions: querries, mutations, and subscirptions.
 
 ### Querries
 
+Inside of schema, along with teh type definitions
+
+The schema consists of type definitions and a top level query type for reading the data. This defines the type of querries you can make to get data. For every query listed, there is a corresponding resolver that defines how it should be parsed. 
+
+#### Example 1 Basic Query
+
+For instance, in the example below there is a query called me which resolves to a student type, which has to have a name field. In the resolver. it is set to resolve the Student to ```Aria Malkani```.
+
+```javascript
+const schema = gql`
+  type Query {
+    me: Student
+  }
+
+  type Student {
+    name: String!
+  }
+`;
+
+const resolvers = {
+  Query: {
+    me: () => {
+      return {
+        name: 'Aria Malkani',
+      };
+    },
+  },
+};
+```
+
+To actually query this data, start up the server and run 
+```graphql
+{
+    me {
+        name
+    }
+}
+
+```
+
+#### Example 2 Query with arguments
+We can also have querries with arguments. For isntance, 
+
+```Javascript
+let students = {
+  1: {
+    id: '1',
+    name: 'Aria',
+  },
+  2: {
+    id: '2',
+    name: 'Emily',
+  },
+};
+
+const schema = gql`
+  type Query {
+    me: Student
+    student(id: ID!): Student
+  }
+
+  type Student {
+    id: ID!
+    name: String!
+  }
+`;
+
+const resolvers = {
+  Query: {
+    me: () => {
+      return students[1];
+    },
+    student: (parents, {id}) => {
+      return students[id];
+    },
+  },
+};
+```
+
+To execute the query, you would run 
+```graphql
+{
+  student(id: "2") {
+    name
+  }
+  me {
+    name
+  }
+}
+```
+#### Example 3: Query with multiple values returned
+```
+const schema = gql`
+  type Query {
+    users: [User!]
+    user(id: ID!): User
+    me: User
+  }
+
+  type User {
+    id: ID!
+    username: String!
+  }
+`;
+
+
+```
+
+
+
+
 
 
 
