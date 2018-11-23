@@ -8,23 +8,23 @@ app.use(cors());
 
 const schema = gql`
   type Query {
-    me: User
+    me: Student
   }
 
-  type User {
-    username: String!
+  type Student {
+    name: String!
   }
 `;
 
 const resolvers = {
-  Query: {
-    me: () => {
-      return {
-        username: "Robin Wieruch"
-      };
-    }
-  }
-};
+    Query: {
+      me: () => {
+        return {
+          name: 'Aria Malkani',
+        };
+      },
+    },
+  };
 
 const server = new ApolloServer({
   typeDefs: schema,

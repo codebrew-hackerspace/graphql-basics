@@ -1,5 +1,3 @@
-# Gr
-
 # Graphql 
 
 GraphQL is query language, a middle layer that defines the API between the front end and backend. It is a way of querying the data you need in a concise, clean manner.
@@ -45,7 +43,7 @@ Inside of schema, along with teh type definitions
 
 The schema consists of type definitions and a top level query type for reading the data. This defines the type of querries you can make to get data. For every query listed, there is a corresponding resolver that defines how it should be parsed. 
 
-#### Example 1 Basic Query
+#### Example 1 Basic Query 
 
 For instance, in the example below there is a query called me which resolves to a student type, which has to have a name field. In the resolver. it is set to resolve the Student to ```Aria Malkani```.
 
@@ -71,18 +69,23 @@ const resolvers = {
 };
 ```
 
-To actually query this data, start up the server and run 
+##### Running Example 1
+
+Running Instructions: ```npm run step1```
+Example code: step1.js
+
+Query to be executed
 ```graphql
 {
     me {
         name
     }
 }
-
 ```
 
+
 #### Example 2 Query with arguments
-We can also have querries with arguments. For isntance, 
+We can also have querries with arguments. For instance, 
 
 ```Javascript
 let students = {
@@ -120,7 +123,16 @@ const resolvers = {
 };
 ```
 
-To execute the query, you would run 
+In this case, the resolved for student can parse arguments passed into the query, which allows you to query a specific id. This allows you to query for specific stdents pased on unique identifiers. 
+
+In this case, we are also assuming the "me" is the first student in the list, and so we return just that one. As long as what is returned matches the Student type, graphql can compile and execute the query. 
+
+##### Running Example 2
+
+Running Instructions: ```npm run step2```
+Example code: step2.js
+
+Query to be executed
 ```graphql
 {
   student(id: "2") {
@@ -131,6 +143,7 @@ To execute the query, you would run
   }
 }
 ```
+
 #### Example 3: Query with multiple values returned
 ```
 const schema = gql`
@@ -145,7 +158,6 @@ const schema = gql`
     username: String!
   }
 `;
-
 
 ```
 
