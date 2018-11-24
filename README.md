@@ -72,6 +72,7 @@ Running Instructions: `npm run step1`
 Example code: step1.js
 
 Query to be executed
+
 ```graphql
 {
   me {
@@ -130,6 +131,7 @@ Running Instructions: `npm run step2`
 Example code: step2.js
 
 Query to be executed
+
 ```graphql
 {
   student(id: "2") {
@@ -171,6 +173,7 @@ Running Instructions: `npm run step3`
 Example code: step3.js
 
 Query to be executed
+
 ```graphql
 {
   students {
@@ -180,11 +183,11 @@ Query to be executed
 }
 ```
 
-## Example 4 Query with context
+xd
 
-In the server definition we can give it context, and use that in the querries. In the query resolver, you can access data from four possible places ```(parent, args, context, info) => { ... }```. We can define the context when we set up the server, and then access values from there.
+In the server definition we can give it context, and use that in the querries. In the query resolver, you can access data from four possible places `(parent, args, context, info) => { ... }`. We can define the context when we set up the server, and then access values from there.
 
-```Javascript 
+```Javascript
 const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
@@ -203,13 +206,13 @@ const resolvers = {
 
 ```
 
-
 ##### Running Example 4
 
 Running Instructions: `npm run step4`
 Example code: step4.js
 
 Query to be executed
+
 ```graphql
 {
   me {
@@ -219,6 +222,77 @@ Query to be executed
 }
 ```
 
+## Example 5 Type Relationships 
 
+We can write a resolver so that every message has an associated Student. We do this by creating a messgae type in which one of the fields is a STudent. The resolver currently goes to the message, looks at the students id, and gets the correspodning student. When you run teh example query, it is now able to map to a student object with all of it's fields. 
 
+```Javascript
+let messages = {
+  1: {
+    id: '1',
+    text: 'Hello World',
+    studentId: '1',
+  },
+  2: {
+    id: '2',
+    text: 'By World',
+    studentId: '2',
+  },
+};
 
+const schema = gql`
+  type Query {
+    me: Student
+    messages: [Message!]!
+    message(id: ID!): Message!
+  }
+  type Student {
+    id: ID!
+    name: String!
+  }
+  type Message {
+    id: ID!
+    text: String!
+    student: Student!
+  }
+`;
+
+const resolvers = {
+  Query: {
+    me: (parent, args, { me }) => {
+      return me;
+    },
+    messages: () => {
+      return Object.values(messages);
+    },
+    message: (parent, { id }) => {
+      return messages[id];
+    }
+  }, 
+  Message: {
+    student: message => {
+      return users[message.studentId];
+    },
+  },
+}; 
+```
+
+##### Running Example 5
+
+Running Instructions: `npm run step5`
+Example code: step5.js
+
+Query to be executed
+
+```graphql
+{
+  message(id: "1") {
+    id
+    text
+    student {
+      id
+      name
+    }
+  }
+}
+```

@@ -1,0 +1,81 @@
+const express = require("express");
+const cors = require("cors");
+const { ApolloServer, gql } = require("apollo-server-express");
+
+const app = express();
+
+app.use(cors());
+
+const students = {
+  1: {
+    id: "1",
+    name: "Aria"
+  },
+  2: {
+    id: "2",
+    name: "Emily"
+  }
+};
+
+let messages = {
+    1: {
+      id: '1',
+      text: 'Hello World',
+      studentId: '1',
+    },
+    2: {
+      id: '2',
+      text: 'By World',
+      studentId: '2',
+    },
+  };
+
+const schema = gql`
+  type Query {
+    me: Student
+    messages: [Message!]!
+    message(id: ID!): Message!
+  }
+  type Student {
+    id: ID!
+    name: String!
+  }
+  type Message {
+    id: ID!
+    text: String!
+    student: Student!
+  }
+`;
+
+const resolvers = {
+  Query: {
+    me: (parent, args, { me }) => {
+      return me;
+    },
+    messages: () => {
+      return Object.values(messages);
+    },
+    message: (parent, { id }) => {
+      return messages[id];
+    }
+  }, 
+  Message: {
+    student: message => {
+        return students[message.studentId];
+    }
+  },
+};
+
+const server = new ApolloServer({
+  typeDefs: schema,
+  resolvers,
+  context: {
+    me: students[1]
+  }
+});
+
+server.applyMiddleware({ app, path: "/graphql" });
+
+app.listen({ port: 8000 }, () => {
+  console.log("Apollo Server on http://localhost:8000/graphql");
+});
