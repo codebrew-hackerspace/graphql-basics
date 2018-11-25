@@ -296,3 +296,70 @@ Query to be executed
   }
 }
 ```
+
+
+## Example 6 Two way type relationships
+
+We can also have each student have a list of associated messages. By adding a list of message ids to the student type, where each message id corresponds to a message, we can access the message object. 
+
+```Javascript 
+const schema = gql`
+  type Query {
+    me: Student
+  }
+  type Student {
+    id: ID!
+    name: String!
+    messages: [Message!]
+  }
+  type Message {
+    id: ID!
+    text: String!
+    student: Student!
+  }
+`;
+
+const resolvers = {
+  Query: {
+    me: (parent, args, { me }) => {
+      return me;
+    }
+  }, 
+  Message: {
+    student: message => {
+        return students[message.studentId];
+    }
+  },
+  Student: {
+    messages: student => {
+      return Object.values(messages).filter(
+        message => message.studentId === student.id,
+      );
+    },
+  },
+};
+```
+
+
+##### Running Example 6
+
+Running Instructions: `npm run step6`
+Example code: step6.js
+
+Query to be executed
+
+```graphql
+{
+  me {
+    name
+    id
+    messages {
+      id
+      text
+      student {
+        name
+      }
+    }
+  }
+}
+```

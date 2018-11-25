@@ -17,14 +17,14 @@ const schema = gql`
 `;
 
 const resolvers = {
-    Query: {
-      me: () => {
-        return {
-          name: 'Aria Malkani',
-        };
-      },
-    },
-  };
+  Query: {
+    me: () => {
+      return {
+        name: "Aria Malkani"
+      };
+    }
+  }
+};
 
 const server = new ApolloServer({
   typeDefs: schema,
