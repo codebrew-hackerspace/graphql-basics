@@ -1,4 +1,4 @@
-# Graphql
+# GraphQL
 
 GraphQL is query language, a middle layer that defines the API between the front end and backend. It is a way of querying the data you need in a concise, clean manner.
 
