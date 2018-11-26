@@ -225,7 +225,7 @@ const schema = gql`
   }
   type Student {
     id: ID!
-    text: String!
+    name: String!
     teacher: Teacher!
   }
 `;
@@ -233,9 +233,9 @@ const schema = gql`
 const resolvers = {
   Student: {
     teacher: student => {
-      return teachers[student.id];
-    },
-  },
+      return teachers[student.teacherId];
+    }
+  }
 };  
 ```
 

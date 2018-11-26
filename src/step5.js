@@ -6,7 +6,7 @@ const app = express();
 
 app.use(cors());
 
-const students = {
+const teachers = {
   1: {
     id: "1",
     name: "Aria"
@@ -17,35 +17,35 @@ const students = {
   }
 };
 
-let messages = {
+let students = {
   1: {
     id: "1",
-    text: "Hello World",
-    studentId: "1"
+    name: "Annika",
+    teacherId: "1"
   },
   2: {
     id: "2",
-    text: "By World",
-    studentId: "2"
+    name: "Cammie",
+    teacherId: "2"
   }
 };
 
 const schema = gql`
   type Query {
-    me: Student
-    student(id: ID!): Student
-    students: [Student!]
-    messages: [Message!]!
-    message(id: ID!): Message!
+    me: Teacher
+    teacher(id: ID!): Teacher
+    teachers: [Teacher!]
+    students: [Student!]!
+    student(id: ID!): Student!
+  }
+  type Teacher {
+    id: ID!
+    name: String!
   }
   type Student {
     id: ID!
     name: String!
-  }
-  type Message {
-    id: ID!
-    text: String!
-    student: Student!
+    teacher: Teacher!
   }
 `;
 
@@ -54,22 +54,22 @@ const resolvers = {
     me: (parent, args, { me }) => {
       return me;
     },
-    student: (parents, { id }) => {
-      return students[id];
+    teacher: (parents, { id }) => {
+      return teachers[id];
+    },
+    teachers: () => {
+      return Object.values(teachers);
     },
     students: () => {
       return Object.values(students);
     },
-    messages: () => {
-      return Object.values(messages);
-    },
-    message: (parent, { id }) => {
-      return messages[id];
+    student: (parent, { id }) => {
+      return students[id];
     }
   },
-  Message: {
-    student: message => {
-      return students[message.studentId];
+  Student: {
+    teacher: student => {
+      return teachers[student.teacherId];
     }
   }
 };
@@ -78,7 +78,7 @@ const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
   context: {
-    me: students[1]
+    me: teachers[1]
   }
 });
 
