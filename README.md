@@ -243,8 +243,6 @@ let messages = {
 const schema = gql`
   type Query {
     me: Student
-    messages: [Message!]!
-    message(id: ID!): Message!
   }
   type Student {
     id: ID!
@@ -261,12 +259,6 @@ const resolvers = {
   Query: {
     me: (parent, args, { me }) => {
       return me;
-    },
-    messages: () => {
-      return Object.values(messages);
-    },
-    message: (parent, { id }) => {
-      return messages[id];
     }
   }, 
   Message: {
@@ -320,16 +312,6 @@ const schema = gql`
 `;
 
 const resolvers = {
-  Query: {
-    me: (parent, args, { me }) => {
-      return me;
-    }
-  }, 
-  Message: {
-    student: message => {
-        return students[message.studentId];
-    }
-  },
   Student: {
     messages: student => {
       return Object.values(messages).filter(
@@ -368,4 +350,75 @@ Query to be executed
 ## Example 6 Mutations
 
 
-Currently we have gone over 
+Currently we have gone over querries, which allow you to access the data. Mutations, on the other hand, allow you to modify the data. In this example, we are going to write mutations to add and delete students. 
+
+
+```Javascript
+const schema = gql`
+  type Mutation {
+    createMessage(text: String!): Message!
+    deleteMessage(id: ID!): Boolean!
+  }
+`;
+const resolvers = {
+  Mutation: {
+    createMessage: (parent, { text }, { me }) => {
+      const id = uuid();
+      const message = {
+        id,
+        text,
+        studentId: me.id
+      };
+      messages[id] = message;
+      students[me.id].messageIds.push(id);
+      return message;
+    },
+    deleteMessage: (parent, { id }) => {
+      const { [id]: message, ...otherMessages } = messages;
+      if (!message) {
+        return false;
+      }
+      messages = otherMessages;
+      return true;
+    }
+  },
+};
+
+```
+
+##### Running Example 7
+
+Running Instructions: `npm run step7`
+Example code: step7.js
+
+To query the student
+```graphql
+{
+  me{
+     name
+    messages {
+      text
+      id
+    }
+  }
+}
+```
+
+To create a message 
+```graphql
+mutation m {
+  createMessage(text:"hi") {
+    text
+    student {
+      name
+    }
+  }
+}
+```
+
+To delete a message, but instead change the id to the id of the correct message you want to delete
+```graphql
+mutation m {
+  deleteMessage(id:"48608df0-6c11-43b5-bc98-26cd7e586e4b") 
+}
+```
