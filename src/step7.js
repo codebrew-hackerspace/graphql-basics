@@ -1,125 +1,117 @@
 const express = require("express");
 const cors = require("cors");
 const { ApolloServer, gql } = require("apollo-server-express");
-const uuid = require("uuid");
+const uuid = require("uuid")
 
 const app = express();
 
 app.use(cors());
 
-const schema = gql`
-  type Query {
-    me: Student
-    student(id: ID!): Student
-    students: [Student!]
-    messages: [Message!]!
-    message(id: ID!): Message!
-  }
-  type Mutation {
-    createMessage(text: String!): Message!
-    deleteMessage(id: ID!): Boolean!
-  }
-  type Student {
-    id: ID!
-    name: String!
-    messages: [Message!]
-  }
-  type Message {
-    id: ID!
-    text: String!
-    student: Student!
-  }
-`;
-
-let students = {
+const teachers = {
   1: {
     id: "1",
     name: "Aria",
-    messageIds: [1]
   },
   2: {
     id: "2",
     name: "Emily",
-    messageIds: [2]
   }
 };
 
-const me = students[1];
-
-let messages = {
+let students = {
   1: {
-    id: "1",
-    text: "Hello",
-    studentId: "1"
+    id: "3",
+    name: "Annika",
+    teacherId: "1"
   },
   2: {
-    id: "2",
-    text: "Hello",
-    studentId: "2"
+    id: "4",
+    name: "Cammie",
+    teacherId: "2"
   }
 };
+
+const schema = gql`
+  type Query {
+    me: Teacher
+    teacher(id: ID!): Teacher
+    teachers: [Teacher!]
+    students: [Student!]!
+    student(id: ID!): Student!
+  }
+  type Teacher {
+    id: ID!
+    name: String!
+    students: [Student!]
+  }
+  type Student {
+    id: ID!
+    name: String!
+    teacher: Teacher!
+  }
+  type Mutation {
+    addStudent(name: String!): Student!
+    deleteStudent(id: ID!): Boolean!
+  }
+`;
 
 const resolvers = {
   Query: {
     me: (parent, args, { me }) => {
       return me;
     },
-    student: (parents, { id }) => {
-      return students[id];
+    teacher: (parents, { id }) => {
+      return teachers[id];
+    },
+    teachers: () => {
+      return Object.values(teachers);
     },
     students: () => {
       return Object.values(students);
     },
-    messages: () => {
-      return Object.values(messages);
-    },
-    message: (parent, { id }) => {
-      return messages[id];
+    student: (parent, { id }) => {
+      return students[id];
     }
   },
-
   Mutation: {
-    createMessage: (parent, { text }, { me }) => {
+    addStudent: (parent, { name }, { me }) => {
       const id = uuid();
-      const message = {
+      const student = {
         id,
-        text,
-        studentId: me.id
+        name,
+        teacherId: me.id
       };
-      messages[id] = message;
-      students[me.id].messageIds.push(id);
-      return message;
+      students[id] = student;
+      return student;
     },
-    deleteMessage: (parent, { id }) => {
-      const { [id]: message, ...otherMessages } = messages;
-      if (!message) {
+    deleteStudent: (parent, { id }) => {
+      const { [id]: student, ...otherStudents } = students;
+      if (!student) {
         return false;
       }
-      messages = otherMessages;
+      students = otherStudents;
       return true;
     }
   },
-
   Student: {
-    messages: student => {
-      return Object.values(messages).filter(
-        message => message.studentId === student.id
-      );
+    teacher: student => {
+      return teachers[student.teacherId];
     }
   },
-
-  Message: {
-    student: message => {
-      return students[message.studentId];
-    }
-  }
+  Teacher: {
+    students: teacher => {
+      return Object.values(students).filter(
+        student => student.teacherId === teacher.id,
+      );
+    },
+  },
 };
 
 const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
   context: {
-    me: students[1]
+    me: teachers[1]
   }
 });
 

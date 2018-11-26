@@ -42,7 +42,7 @@ The schema consists of type definitions and a top level query type for reading t
 
 #### Example 1 Basic Query
 
-For instance, in the example below there is a query called me which resolves to a student type, which has to have a name field. In the resolver. it is set to resolve the Student to `Aria Malkani`.
+For instance, in the example below there is a query called me which resolves to a teacher type, which has to have a name field. In the resolver, it is set to resolve the Teacher to `Aria`.
 
 ```javascript
 const schema = gql`
@@ -59,7 +59,7 @@ const resolvers = {
   Query: {
     me: () => {
       return {
-        name: "Aria Malkani"
+        name: "Aria"
       };
     }
   }
@@ -109,9 +109,9 @@ const resolvers = {
 };
 ```
 
-In this case, the resolved for student can parse arguments passed into the query, which allows you to query a specific id. This allows you to query for specific stdents pased on unique identifiers.
+In this case, the resolved for teacher can parse arguments passed into the query, which allows you to query a specific id. This allows you to query for specific stdents pased on unique identifiers.
 
-In this case, we are also assuming the "me" is the first student in the list, and so we return just that one. As long as what is returned matches the Student type, graphql can compile and execute the query.
+In this case, we are also assuming the "me" is the first teacher in the list, and so we return just that one. As long as what is returned matches the Teacher type, graphql can compile and execute the query.
 
 ##### Running Example 2
 
@@ -133,7 +133,7 @@ Query to be executed
 
 #### Example 3: Query with multiple values returned
 
-By setting the return type as `[Student!]` we are expeting a list of student types where none of the students are null. The resolver takes the list of students and returns it in this format.
+By setting the return type as `[Teacher!]` we are expeting a list of teacher types where none of the teachefs are null. The resolver takes the list of teachers and returns it in this format.
 
 ```Javascript
 const schema = gql`
@@ -212,7 +212,7 @@ Query to be executed
 
 ## Example 5 Type Relationships 
 
-We can write a resolver so that every teacher has an associated Student. We do this by creating a messgae type in which one of the fields is a STudent. The resolver currently goes to the teacher, looks at the students id, and gets the correspodning student. When you run teh example query, it is now able to map to a student object with all of it's fields. 
+We can write a resolver so that every teacher has an associated Student. We do this by creating a student type in which one of the fields is a Teacher. The resolver currently goes to the student, looks at the teacherId, and gets the correspodning teacher. When you run the example query, it is now able to map to a teacher object with all of it's fields. 
 
 ```Javascript
 const schema = gql`
@@ -262,7 +262,7 @@ Query to be executed
 
 ## Example 6 Two way type relationships
 
-We can also have each student have a list of associated messages. By adding a list of message ids to the student type, where each message id corresponds to a message, we can access the message object. 
+We can also have each teacher have a list of associated students. In the resolver, it can get all the students, and filter out only the ones with a matching teacher id. 
 
 ```Javascript 
 const schema = gql`
@@ -302,13 +302,14 @@ Query to be executed
 
 ```graphql
 {
-  me {
-    name
+  teachers {
+    name 
     id
-    messages {
+    students {
+      name
       id
-      text
-      student {
+      teacher {
+        id
         name
       }
     }
@@ -317,7 +318,7 @@ Query to be executed
 ```
 
 
-## Example 6 Mutations
+## Example 7 Mutations
 
 
 Currently we have gone over querries, which allow you to access the data. Mutations, on the other hand, allow you to modify the data. In this example, we are going to write mutations to add and delete students. 
@@ -326,32 +327,31 @@ Currently we have gone over querries, which allow you to access the data. Mutati
 ```Javascript
 const schema = gql`
   type Mutation {
-    createMessage(text: String!): Message!
-    deleteMessage(id: ID!): Boolean!
+    addStudent(name: String!): Student!
+    deleteStudent(id: ID!): Boolean!
   }
 `;
 const resolvers = {
   Mutation: {
-    createMessage: (parent, { text }, { me }) => {
+    addStudent: (parent, { name }, { me }) => {
       const id = uuid();
-      const message = {
+      const student = {
         id,
-        text,
-        studentId: me.id
+        name,
+        teacherId: me.id
       };
-      messages[id] = message;
-      students[me.id].messageIds.push(id);
-      return message;
+      students[id] = student;
+      return student;
     },
-    deleteMessage: (parent, { id }) => {
-      const { [id]: message, ...otherMessages } = messages;
-      if (!message) {
+    deleteStudent: (parent, { id }) => {
+      const { [id]: student, ...otherStudents } = students;
+      if (!student) {
         return false;
       }
-      messages = otherMessages;
+      students = otherStudents;
       return true;
     }
-  },
+  }
 };
 
 ```
@@ -365,30 +365,31 @@ To query the student
 ```graphql
 {
   me {
-     name
-    messages {
-      text
+    name
+    id
+    students {
+      name
       id
     }
   }
 }
 ```
 
-To create a message 
+To create a student 
 ```graphql
 mutation m {
-  createMessage(text:"hi") {
-    text
-    student {
+  addStudent(name:"Hana") {
+    name
+    teacher {
       name
     }
   }
 }
 ```
 
-To delete a message, but instead change the id to the id of the correct message you want to delete
+To delete a student, but instead change the id to the id of the correct student you want to delete
 ```graphql
 mutation m {
-  deleteMessage(id:"48608df0-6c11-43b5-bc98-26cd7e586e4b") 
+  deleteStudent(id:"3f69a74f-48f8-4a24-9841-e287ee367734") 
 }
 ```
