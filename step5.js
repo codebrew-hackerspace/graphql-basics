@@ -18,21 +18,23 @@ const students = {
 };
 
 let messages = {
-    1: {
-      id: '1',
-      text: 'Hello World',
-      studentId: '1',
-    },
-    2: {
-      id: '2',
-      text: 'By World',
-      studentId: '2',
-    },
-  };
+  1: {
+    id: "1",
+    text: "Hello World",
+    studentId: "1"
+  },
+  2: {
+    id: "2",
+    text: "By World",
+    studentId: "2"
+  }
+};
 
 const schema = gql`
   type Query {
     me: Student
+    student(id: ID!): Student
+    students: [Student!]
     messages: [Message!]!
     message(id: ID!): Message!
   }
@@ -52,18 +54,24 @@ const resolvers = {
     me: (parent, args, { me }) => {
       return me;
     },
+    student: (parents, { id }) => {
+      return students[id];
+    },
+    students: () => {
+      return Object.values(students);
+    },
     messages: () => {
       return Object.values(messages);
     },
     message: (parent, { id }) => {
       return messages[id];
     }
-  }, 
+  },
   Message: {
     student: message => {
-        return students[message.studentId];
+      return students[message.studentId];
     }
-  },
+  }
 };
 
 const server = new ApolloServer({

@@ -19,6 +19,8 @@ const students = {
 
 const schema = gql`
   type Query {
+    me: Student
+    student(id: ID!): Student
     students: [Student!]
   }
   type Student {
@@ -29,6 +31,12 @@ const schema = gql`
 
 const resolvers = {
   Query: {
+    me: () => {
+      return students[1];
+    },
+    student: (parents, {id}) => {
+      return students[id];
+    },
     students: () => {
       return Object.values(students);
     }

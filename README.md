@@ -86,20 +86,9 @@ Query to be executed
 We can also have querries with arguments. For instance,
 
 ```Javascript
-let students = {
-  1: {
-    id: '1',
-    name: 'Aria',
-  },
-  2: {
-    id: '2',
-    name: 'Emily',
-  },
-};
-
 const schema = gql`
-  type Query {
-    me: Student
+  type Query {hrdkghgikjvdifbnkkeblhjjhekdikdbeh
+
     student(id: ID!): Student
   }
 
@@ -227,19 +216,6 @@ Query to be executed
 We can write a resolver so that every message has an associated Student. We do this by creating a messgae type in which one of the fields is a STudent. The resolver currently goes to the message, looks at the students id, and gets the correspodning student. When you run teh example query, it is now able to map to a student object with all of it's fields. 
 
 ```Javascript
-let messages = {
-  1: {
-    id: '1',
-    text: 'Hello World',
-    studentId: '1',
-  },
-  2: {
-    id: '2',
-    text: 'By World',
-    studentId: '2',
-  },
-};
-
 const schema = gql`
   type Query {
     me: Student
@@ -256,11 +232,6 @@ const schema = gql`
 `;
 
 const resolvers = {
-  Query: {
-    me: (parent, args, { me }) => {
-      return me;
-    }
-  }, 
   Message: {
     student: message => {
       return users[message.studentId];
@@ -394,7 +365,7 @@ Example code: step7.js
 To query the student
 ```graphql
 {
-  me{
+  me {
      name
     messages {
       text
