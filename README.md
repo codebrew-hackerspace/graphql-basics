@@ -248,10 +248,10 @@ Query to be executed
 
 ```graphql
 {
-  message(id: "1") {
+  student(id: "1") {
     id
-    text
-    student {
+    name
+    teacher {
       id
       name
     }
@@ -267,25 +267,25 @@ We can also have each student have a list of associated messages. By adding a li
 ```Javascript 
 const schema = gql`
   type Query {
-    me: Student
+    me: Teacher
+  }
+  type Teacher {
+    id: ID!
+    name: String!
+    students: [Student!]
   }
   type Student {
     id: ID!
     name: String!
-    messages: [Message!]
-  }
-  type Message {
-    id: ID!
-    text: String!
-    student: Student!
+    teacher: Teacher!
   }
 `;
 
 const resolvers = {
-  Student: {
-    messages: student => {
-      return Object.values(messages).filter(
-        message => message.studentId === student.id,
+  Teacher: {
+    students: teacher => {
+      return Object.values(students).filter(
+        student => student.teacherId === teacher.id,
       );
     },
   },

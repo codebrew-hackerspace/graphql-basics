@@ -6,49 +6,47 @@ const app = express();
 
 app.use(cors());
 
-const students = {
+const teachers = {
   1: {
     id: "1",
     name: "Aria",
-    messageIds: [1]
   },
   2: {
     id: "2",
     name: "Emily",
-    messageIds: [2]
   }
 };
 
-let messages = {
+let students = {
   1: {
-    id: "1",
-    text: "Hello World",
-    studentId: "1"
+    id: "3",
+    name: "Annika",
+    teacherId: "1"
   },
   2: {
-    id: "2",
-    text: "By World",
-    studentId: "2"
+    id: "4",
+    name: "Cammie",
+    teacherId: "2"
   }
 };
 
 const schema = gql`
   type Query {
-    me: Student
-    student(id: ID!): Student
+    me: Teacher
+    teacher(id: ID!): Teacher
+    teachers: [Teacher!]
+    students: [Student!]!
+    student(id: ID!): Student!
+  }
+  type Teacher {
+    id: ID!
+    name: String!
     students: [Student!]
-    messages: [Message!]!
-    message(id: ID!): Message!
   }
   type Student {
     id: ID!
     name: String!
-    messages: [Message!]
-  }
-  type Message {
-    id: ID!
-    text: String!
-    student: Student!
+    teacher: Teacher!
   }
 `;
 
@@ -57,38 +55,38 @@ const resolvers = {
     me: (parent, args, { me }) => {
       return me;
     },
-    student: (parents, { id }) => {
-      return students[id];
+    teacher: (parents, { id }) => {
+      return teachers[id];
+    },
+    teachers: () => {
+      return Object.values(teachers);
     },
     students: () => {
       return Object.values(students);
     },
-    messages: () => {
-      return Object.values(messages);
-    },
-    message: (parent, { id }) => {
-      return messages[id];
-    }
-  },
-  Message: {
-    student: message => {
-      return students[message.studentId];
+    student: (parent, { id }) => {
+      return students[id];
     }
   },
   Student: {
-    messages: student => {
-      return Object.values(messages).filter(
-        message => message.studentId === student.id
-      );
+    teacher: student => {
+      return teachers[student.teacherId];
     }
-  }
+  },
+  Teacher: {
+    students: teacher => {
+      return Object.values(students).filter(
+        student => student.teacherId === teacher.id,
+      );
+    },
+  },
 };
 
 const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
   context: {
-    me: students[1]
+    me: teachers[1]
   }
 });
 
