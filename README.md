@@ -363,3 +363,9 @@ Query to be executed
   }
 }
 ```
+
+
+## Example 6 Mutations
+
+
+Currently we have gone over 

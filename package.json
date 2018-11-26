@@ -5,12 +5,14 @@
     "step3": "node step3.js",
     "step4": "node step4.js",
     "step5": "node step5.js",
-    "step6": "node step6.js"
+    "step6": "node step6.js",
+    "step7": "node step7.js"
   },
   "dependencies": {
     "apollo-server-express": "^2.2.2",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "graphql": "^14.0.2"
+    "graphql": "^14.0.2",
+    "uuid": "^3.3.2"
   }
 }
