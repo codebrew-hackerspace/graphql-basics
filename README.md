@@ -22,7 +22,7 @@ For instance, if we wanted to define a student with a name, we would define it a
 
 ```javascript
 const schema = gql`
-  type Student {
+  type Teacher {
     name: String!
   }
 `;
@@ -47,10 +47,10 @@ For instance, in the example below there is a query called me which resolves to 
 ```javascript
 const schema = gql`
   type Query {
-    me: Student
+    me: Teacher
   }
 
-  type Student {
+  type Teacher {
     name: String!
   }
 `;
@@ -87,12 +87,11 @@ We can also have querries with arguments. For instance,
 
 ```Javascript
 const schema = gql`
-  type Query {hrdkghgikjvdifbnkkeblhjjhekdikdbeh
-
-    student(id: ID!): Student
+  type Query {
+    teacher(id: ID!): Teacher
   }
 
-  type Student {
+  type Teacher {
     id: ID!
     name: String!
   }
@@ -101,10 +100,10 @@ const schema = gql`
 const resolvers = {
   Query: {
     me: () => {
-      return students[1];
+      return teachers[1];
     },
-    student: (parents, {id}) => {
-      return students[id];
+    teacher: (parents, {id}) => {
+      return teachers[id];
     },
   },
 };
@@ -123,7 +122,7 @@ Query to be executed
 
 ```graphql
 {
-  student(id: "2") {
+  teacher(id: "2") {
     name
   }
   me {
@@ -139,9 +138,9 @@ By setting the return type as `[Student!]` we are expeting a list of student typ
 ```Javascript
 const schema = gql`
   type Query {
-    students: [Student!]
+    teachers: [Teacher!]
   }
-  type Student {
+  type Teacher {
     id: ID!
     name: String!
   }
@@ -149,8 +148,8 @@ const schema = gql`
 
 const resolvers = {
   Query: {
-    students: () => {
-      return Object.values(students);
+    teachers: () => {
+      return Object.values(teachers);
     },
   }
 };
@@ -165,14 +164,14 @@ Query to be executed
 
 ```graphql
 {
-  students {
+  teachers {
     id
     name
   }
 }
 ```
 
-xd
+#### Example 4: Using context
 
 In the server definition we can give it context, and use that in the querries. In the query resolver, you can access data from four possible places `(parent, args, context, info) => { ... }`. We can define the context when we set up the server, and then access values from there.
 
@@ -181,7 +180,7 @@ const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
   context: {
-    me: students[1],
+    me: teachers[1],
   },
 });
 
@@ -213,31 +212,31 @@ Query to be executed
 
 ## Example 5 Type Relationships 
 
-We can write a resolver so that every message has an associated Student. We do this by creating a messgae type in which one of the fields is a STudent. The resolver currently goes to the message, looks at the students id, and gets the correspodning student. When you run teh example query, it is now able to map to a student object with all of it's fields. 
+We can write a resolver so that every teacher has an associated Student. We do this by creating a messgae type in which one of the fields is a STudent. The resolver currently goes to the teacher, looks at the students id, and gets the correspodning student. When you run teh example query, it is now able to map to a student object with all of it's fields. 
 
 ```Javascript
 const schema = gql`
   type Query {
-    me: Student
+    me: Teacher
   }
-  type Student {
+  type Teacher {
     id: ID!
     name: String!
   }
-  type Message {
+  type Student {
     id: ID!
     text: String!
-    student: Student!
+    teacher: Teacher!
   }
 `;
 
 const resolvers = {
-  Message: {
-    student: message => {
-      return users[message.studentId];
+  Student: {
+    teacher: student => {
+      return teachers[student.id];
     },
   },
-}; 
+};  
 ```
 
 ##### Running Example 5

@@ -8,10 +8,10 @@ app.use(cors());
 
 const schema = gql`
   type Query {
-    me: Student
+    me: Teacher
   }
 
-  type Student {
+  type Teacher {
     name: String!
   }
 `;

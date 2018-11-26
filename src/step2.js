@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 
 
-const students = {
+const teachers = {
     1: {
       id: '1',
       name: 'Aria',
@@ -20,11 +20,11 @@ const students = {
   
   const schema = gql`
     type Query {
-      me: Student
-      student(id: ID!): Student
+      me: Teacher
+      teacher(id: ID!): Teacher
     }
   
-    type Student {
+    type Teacher {
       id: ID!
       name: String!
     }
@@ -33,10 +33,10 @@ const students = {
   const resolvers = {
     Query: {
       me: () => {
-        return students[1];
+        return teachers[1];
       },
-      student: (parents, {id}) => {
-        return students[id];
+      teacher: (parents, {id}) => {
+        return teachers[id];
       },
     },
   };
